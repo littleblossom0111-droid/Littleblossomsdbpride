@@ -1038,8 +1038,6 @@ href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%22
 
     </div>
 
-    <div class="gallery-admin-entry"><a class="btn btn-ghost" href="gallery-admin.html">Admin Upload / Manage Gallery</a></div>
-
 </section>
 
 
@@ -1606,6 +1604,35 @@ href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%22
 
 </script>
 
+
+<!-- Private admin shortcut: tap the footer flower 5 times quickly. Authentication is still required. -->
+<script>
+(() => {
+  const flower = document.querySelector('.footer .nav-logo-icon');
+  if (!flower) return;
+  flower.setAttribute('role', 'button');
+  flower.setAttribute('tabindex', '0');
+  flower.setAttribute('aria-label', 'Little Blossoms');
+  let taps = 0, resetTimer;
+  const tap = () => {
+    taps++;
+    clearTimeout(resetTimer);
+    if (taps >= 5) {
+      taps = 0;
+      window.location.href = 'gallery-admin.html';
+      return;
+    }
+    resetTimer = setTimeout(() => { taps = 0; }, 2500);
+  };
+  flower.addEventListener('click', tap);
+  flower.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      tap();
+    }
+  });
+})();
+</script>
 
 <script
   type="module"

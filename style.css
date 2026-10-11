@@ -1307,3 +1307,39 @@ p{ margin: 0 0 1em; }
 @media(max-width:600px){
   .hero-photo{object-position:58% center}
 }
+
+
+/* FINAL HERO FIX: one full-bleed photo on mobile and desktop */
+.hero{
+  position:relative;
+  overflow:hidden;
+}
+.hero-video-wrap{
+  position:absolute !important;
+  inset:0 !important;
+  width:100% !important;
+  height:100% !important;
+  background-image:none !important;
+  background-color:transparent !important;
+  overflow:hidden !important;
+}
+.hero-video-wrap .hero-photo{
+  position:absolute !important;
+  inset:0 !important;
+  display:block !important;
+  width:100% !important;
+  height:100% !important;
+  max-width:none !important;
+  max-height:none !important;
+  object-fit:cover !important;
+  object-position:center center !important;
+  margin:0 !important;
+  border:0 !important;
+}
+.hero::after{
+  background:linear-gradient(90deg,rgba(20,30,25,.58) 0%,rgba(20,30,25,.34) 52%,rgba(20,30,25,.12) 100%) !important;
+}
+@media(max-width:600px){
+  .hero{min-height:100svh !important; padding-top:125px !important; padding-bottom:75px !important}
+  .hero-video-wrap .hero-photo{object-position:54% center !important}
+}

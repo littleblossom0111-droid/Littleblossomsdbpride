@@ -1624,7 +1624,7 @@ href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%22
     }
     resetTimer = setTimeout(() => { taps = 0; }, 2500);
   };
-  flower.addEventListener('click', tap);
+  flower.addEventListener('click', (event) => { event.preventDefault(); event.stopPropagation(); tap(); });
   flower.addEventListener('keydown', (event) => {
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();

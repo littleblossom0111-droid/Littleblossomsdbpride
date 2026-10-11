@@ -976,3 +976,22 @@ p{ margin: 0 0 1em; }
 .btn-danger:hover{background:#921c29;}
 .gallery-auth-form[hidden],.gallery-upload-form[hidden]{display:none!important;}
 @media(max-width:600px){.gallery-admin-heading{flex-direction:column}.gallery-admin-actions{flex-direction:column}.gallery-admin-actions .btn{width:100%;justify-content:center}.gallery-admin-panel{padding:1rem}.gallery-media-item{padding:8px}}
+
+
+/* Gallery: separate photo/video views; media opens only after user taps it. */
+.gallery-media-tabs{display:flex;justify-content:center;gap:10px;margin:22px auto 18px}
+.gallery-media-tab{border:1px solid #eadde1;border-radius:999px;padding:10px 22px;background:#fff;color:#614650;font:inherit;font-weight:700;cursor:pointer}
+.gallery-media-tab.active{background:#a83e5a;color:#fff;border-color:#a83e5a}
+.gallery-media-open{display:block;width:100%;padding:0;border:0;background:transparent;border-radius:14px;overflow:hidden;cursor:pointer;position:relative}
+.gallery-media-open>img,.gallery-video-poster>img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover}
+.gallery-video-poster{position:relative;display:grid;place-items:center;min-height:130px;aspect-ratio:4/3;background:linear-gradient(135deg,#f7dce6,#e5e8f7);overflow:hidden}
+.gallery-video-poster>img{position:absolute;inset:0;height:100%}
+.gallery-play-icon{position:absolute;display:grid;place-items:center;width:52px;height:52px;border-radius:50%;color:#fff;background:#a83e5a;box-shadow:0 4px 20px #0003;padding-left:3px}
+.gallery-video-symbol{font-size:42px;color:#a83e5a}
+.gallery-media-date{display:block;margin-top:6px;color:#88747b;font-size:.82rem}
+.gallery-media-item{min-width:0}
+.gallery-viewer{position:fixed;inset:0;z-index:10000;background:#120e12f2;display:flex;align-items:center;justify-content:center;padding:56px 16px 20px}
+.gallery-viewer img,.gallery-viewer video{display:block;max-width:min(100%,1100px);max-height:88vh;width:auto;height:auto;object-fit:contain;border-radius:10px}
+.gallery-viewer-close{position:absolute;top:14px;right:16px;border:0;border-radius:50%;width:44px;height:44px;font-size:30px;color:#33232a;background:#fff;cursor:pointer}
+.gallery-admin-entry{display:flex;justify-content:center;margin-top:28px}
+@media(max-width:560px){.gallery-media-tabs{margin-top:18px}.gallery-media-tab{padding:9px 18px}.gallery-media-open>img,.gallery-video-poster{aspect-ratio:1/1}}

@@ -537,9 +537,11 @@ async function findSlotMedia(
    ========================================================= */
 
 let mediaLoadToken = 0;
+let currentGalleryFolder = "";
 
 async function loadGalleryMedia(folder, token) {
   if (!lightboxMedia) return;
+  currentGalleryFolder = folder;
   lightboxMedia.innerHTML = '<div class="lightbox-loading">Loading photos &amp; videos…</div>';
   try {
     if (window.LBGalleryAdminReady) await Promise.race([window.LBGalleryAdminReady,new Promise((_,reject)=>setTimeout(()=>reject(new Error("Gallery timeout")),8000))]);
@@ -562,6 +564,7 @@ function renderGalleryMedia(filter,folder,token=mediaLoadToken) {
   if(!items.length){lightboxMedia.innerHTML='<div class="lightbox-empty">No '+(filter==="image"?"photos":"videos")+' in this category yet.</div>';return;}
   lightboxMedia.innerHTML="";
   const gallery=window.LBGalleryAdmin, canManage=!!(gallery&&gallery.isAdmin);
+  const adminLink=document.getElementById("galleryModalAdminLink"); if(adminLink)adminLink.hidden=!canManage;
   items.forEach(item=>{
     const card=document.createElement("article");card.className="gallery-media-item";
     const open=document.createElement("button");open.type="button";open.className="gallery-media-open";open.setAttribute("aria-label",(filter==="video"?"Play video: ":"View photo: ")+item.title);
@@ -589,7 +592,7 @@ function renderGalleryMedia(filter,folder,token=mediaLoadToken) {
     lightboxMedia.appendChild(card);
   });
 }
-document.querySelectorAll("[data-media-filter]").forEach(button=>button.addEventListener("click",()=>renderGalleryMedia(button.dataset.mediaFilter,"",mediaLoadToken)));
+document.querySelectorAll("[data-media-filter]").forEach(button=>button.addEventListener("click",()=>renderGalleryMedia(button.dataset.mediaFilter,currentGalleryFolder,mediaLoadToken)));
 
 
 /* =========================================================

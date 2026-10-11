@@ -1038,6 +1038,53 @@ href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%22
 
     </div>
 
+    <div class="gallery-admin-entry">
+      <button type="button" class="btn btn-ghost" id="galleryAdminToggle">Admin Login</button>
+    </div>
+
+    <section class="gallery-admin-panel" id="galleryAdminPanel" hidden aria-label="Gallery administration">
+      <div class="gallery-admin-heading">
+        <div>
+          <p class="eyebrow">Private Admin Area</p>
+          <h3>Manage Gallery Photos &amp; Videos</h3>
+          <p class="section-text">Sign in with the authorised Little Blossoms admin email to upload, edit or delete gallery items.</p>
+        </div>
+        <button type="button" class="btn btn-ghost" id="galleryAdminLogout" hidden>Log out</button>
+      </div>
+
+      <form class="lead-form gallery-auth-form" id="galleryAuthForm">
+        <h4>Admin Sign In</h4>
+        <label>Email<input type="email" name="email" autocomplete="username" required maxlength="254" placeholder="Admin email"></label>
+        <label>Password<input type="password" name="password" autocomplete="current-password" required minlength="8" maxlength="128" placeholder="Admin password"></label>
+        <div class="gallery-admin-actions">
+          <button class="btn btn-primary" type="submit">Sign In</button>
+          <button class="btn btn-ghost" type="button" id="galleryAdminCreate">Create Admin Account</button>
+          <button class="btn btn-ghost" type="button" id="galleryAdminForgot">Forgot Password</button>
+        </div>
+        <p class="form-feedback" id="galleryAuthFeedback" role="status" aria-live="polite"></p>
+        <p class="gallery-admin-note">Admin account is restricted to the authorised email address. If you create it for the first time, confirm the verification email before signing in.</p>
+      </form>
+
+      <form class="lead-form gallery-upload-form" id="galleryUploadForm" hidden>
+        <h4>Upload New Photo or Video</h4>
+        <div class="lead-form-grid">
+          <label>Title<input name="title" required maxlength="120" placeholder="e.g. Painting activity"></label>
+          <label>Gallery category<select name="category" required>
+            <option value="classroom">Classroom</option>
+            <option value="art-activities">Art Activities</option>
+            <option value="outdoor-play">Outdoor Play</option>
+            <option value="celebration">Celebration</option>
+            <option value="kids-learning">Kids Learning</option>
+          </select></label>
+        </div>
+        <label>Description (optional)<textarea name="description" rows="2" maxlength="1000" placeholder="A short description"></textarea></label>
+        <label>Choose photos or videos<input type="file" name="media_files" accept="image/jpeg,image/png,image/webp,image/gif,image/heic,video/mp4,video/webm,video/quicktime,video/x-m4v" multiple required></label>
+        <p class="gallery-admin-note">Upload from your phone or laptop. Each file can be up to 100 MB. Use MP4 for the best video compatibility.</p>
+        <button class="btn btn-primary" type="submit">Upload to Gallery</button>
+        <p class="form-feedback" id="galleryUploadFeedback" role="status" aria-live="polite"></p>
+      </form>
+    </section>
+
   </div>
 
 </section>

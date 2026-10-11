@@ -3193,7 +3193,7 @@ window.LBGalleryAdminReady = (async () => {
   };
   const currentEmail = (session) => (session?.user?.email || "").toLowerCase();
   let isAdmin = false;
-  window.LBGalleryAdmin = { client, get isAdmin() { return isAdmin; } };
+  window.LBGalleryAdmin = { client, isAdmin: false };
 
   const refreshRole = async (session) => {
     isAdmin = currentEmail(session) === ADMIN_EMAIL;
@@ -3294,6 +3294,7 @@ window.LBGalleryAdminReady = (async () => {
       event.preventDefault();
       if (!isAdmin) { setMessage(uploadFeedback, "Please sign in as admin first.", true); return; }
       const data = new FormData(uploadForm);
+      const selectedCategory = String(data.get("category") || "classroom");
       const files = Array.from(data.getAll("media_files")).filter(file => file && file.size);
       if (!files.length) { setMessage(uploadFeedback, "Choose at least one photo or video.", true); return; }
       const title = String(data.get("title") || "").trim();
@@ -3335,9 +3336,8 @@ window.LBGalleryAdminReady = (async () => {
       if (completed) {
         setMessage(uploadFeedback, "Done! " + completed + " file(s) added to the gallery.");
         uploadForm.reset();
-        const category = uploadForm.querySelector('[name="category"]').value;
         document.querySelectorAll(".gallery-card").forEach(card => {
-          if (card.dataset.folder === category) {
+          if (card.dataset.folder === selectedCategory) {
             card.click();
           }
         });

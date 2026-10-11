@@ -3193,3 +3193,86 @@ async function initHeroScene() {
   animate();
 
 }
+
+/* =========================================================
+   SUPABASE ENQUIRY FORMS
+   Uses the public publishable key; database RLS protects writes.
+   ========================================================= */
+(() => {
+  const SUPABASE_URL = "https://shyxftohajgbxunfsyay.supabase.co";
+  const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_hvisH10Zh_MlX77IVzhTag_a5sv1Nn3";
+  const sendRow = async (table, row) => {
+    const response = await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "apikey": SUPABASE_PUBLISHABLE_KEY,
+        "Authorization": `Bearer ${SUPABASE_PUBLISHABLE_KEY}`,
+        "Prefer": "return=minimal"
+      },
+      body: JSON.stringify(row)
+    });
+    if (!response.ok) {
+      let detail = "";
+      try { detail = await response.text(); } catch (_) {}
+      throw new Error(detail || "Could not submit the form.");
+    }
+  };
+  const wireForm = (formId, table, feedbackId, fields) => {
+    const form = document.getElementById(formId);
+    const feedback = document.getElementById(feedbackId);
+    if (!form || !feedback) return;
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const button = form.querySelector('button[type="submit"]');
+      const data = new FormData(form);
+      const row = {};
+      fields.forEach((field) => {
+        const value = String(data.get(field) || "").trim();
+        if (value) row[field] = value;
+      });
+      feedback.textContent = "Sending…";
+      feedback.style.color = "var(--ink-soft)";
+      if (button) button.disabled = true;
+      try {
+        await sendRow(table, row);
+        form.reset();
+        feedback.textContent = "Thank you! Your details have been received. Our team will contact you soon.";
+        feedback.style.color = "var(--leaf-deep)";
+      } catch (error) {
+        console.error("Form submission failed:", error);
+        feedback.textContent = "Sorry, the message could not be sent right now. Please contact us on WhatsApp or call.";
+        feedback.style.color = "var(--coral-deep)";
+      } finally {
+        if (button) button.disabled = false;
+      }
+    });
+  };
+  document.addEventListener("DOMContentLoaded", () => {
+    wireForm("admissionForm", "admission_enquiries", "admissionFeedback",
+      ["child_name", "parent_name", "phone", "email", "child_age", "program", "message"]);
+    wireForm("contactForm", "contact_messages", "contactFeedback",
+      ["name", "phone", "email", "subject", "message"]);
+    const certificate = document.getElementById("certificatePhoto");
+    if (certificate) {
+      certificate.addEventListener("click", () => {
+        const image = certificate.querySelector("img");
+        if (!image || certificate.classList.contains("is-missing")) return;
+        const overlay = document.createElement("div");
+        overlay.className = "certificate-lightbox active";
+        overlay.setAttribute("role", "dialog");
+        overlay.setAttribute("aria-modal", "true");
+        overlay.innerHTML = '<button type="button" class="certificate-close" aria-label="Close certificate">✕</button><img alt="Little Blossoms certificate">';
+        overlay.querySelector("img").src = image.src;
+        const close = () => { overlay.remove(); document.body.style.overflow = ""; };
+        overlay.querySelector("button").addEventListener("click", close);
+        overlay.addEventListener("click", (e) => { if (e.target === overlay) close(); });
+        document.addEventListener("keydown", function esc(e) {
+          if (e.key === "Escape" && document.body.contains(overlay)) { close(); document.removeEventListener("keydown", esc); }
+        });
+        document.body.appendChild(overlay);
+        document.body.style.overflow = "hidden";
+      });
+    }
+  });
+})();

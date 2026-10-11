@@ -544,10 +544,15 @@ async function loadGalleryMedia(folder, token) {
 
   let results = [];
   try {
-    if (window.LBGalleryAdminReady) await window.LBGalleryAdminReady;
+    if (window.LBGalleryAdminReady) {
+      await Promise.race([
+        window.LBGalleryAdminReady,
+        new Promise((_, reject) => setTimeout(() => reject(new Error("Gallery service timed out")), 8000))
+      ]);
+    }
     const gallery = window.LBGalleryAdmin;
     if (gallery && gallery.client) {
-      let query = gallery.client.from("gallery_items").select("*").eq("category", folder).order("display_order", { ascending: true }).order("created_at", { ascending: false });
+      const query = gallery.client.from("gallery_items").select("*").eq("category", folder).order("created_at", { ascending: false });
       const { data, error } = await query;
       if (!error && data && data.length) {
         results = data.map(item => ({
@@ -563,11 +568,12 @@ async function loadGalleryMedia(folder, token) {
 
   // Retain support for any legacy media/<category>/ files already hosted in the repo.
   if (!results.length) {
-    for (let i = 1; i <= MEDIA_SLOTS; i++) {
-      if (token !== mediaLoadToken) return;
-      const media = await findSlotMedia(folder, i);
-      if (media) results.push(media);
-    }
+    // Probe legacy files concurrently so an empty category does not leave the modal loading for a long time.
+    const legacyResults = await Promise.all(
+      Array.from({ length: MEDIA_SLOTS }, (_, index) => findSlotMedia(folder, index + 1))
+    );
+    if (token !== mediaLoadToken) return;
+    results = legacyResults.filter(Boolean);
   }
   if (token !== mediaLoadToken) return;
 

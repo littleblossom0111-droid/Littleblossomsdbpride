@@ -247,10 +247,23 @@ href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%22
 
 <header class="hero" id="home">
 
-  <canvas
-    id="hero-canvas"
-    class="hero-canvas">
-  </canvas>
+  <div class="hero-3d-stage" aria-hidden="true">
+    <div class="hero-orbit orbit-one"></div>
+    <div class="hero-orbit orbit-two"></div>
+    <div class="hero-spark spark-one">✦</div><div class="hero-spark spark-two">✧</div><div class="hero-spark spark-three">✦</div>
+    <div class="hero-book-stack">
+      <div class="book book-back"><span>IMAGINE</span></div>
+      <div class="book book-middle"><span>CREATE</span></div>
+      <div class="book book-front"><span>little minds<br><b>BIG DREAMS</b></span><i>✿</i></div>
+    </div>
+    <div class="toy-cube cube-pink"><span>A</span></div>
+    <div class="toy-cube cube-yellow"><span>★</span></div>
+    <div class="toy-cube cube-blue"><span>1</span></div>
+    <div class="toy-globe"><div class="globe-land land-one"></div><div class="globe-land land-two"></div><div class="globe-shine"></div></div>
+    <div class="toy-pencil"><span></span></div>
+    <div class="paper-plane">➤</div>
+    <div class="stage-shadow"></div>
+  </div>
 
   <div class="hero-noise"></div>
 
@@ -1592,18 +1605,6 @@ href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%22
 <!-- =====================================================
      THREE.JS
      ===================================================== -->
-
-<script type="importmap">
-
-{
-  "imports": {
-    "three":
-    "https://unpkg.com/three@0.160.0/build/three.module.js"
-  }
-}
-
-</script>
-
 
 <!-- Private admin shortcut: tap the footer flower 5 times quickly. Authentication is still required. -->
 <script>

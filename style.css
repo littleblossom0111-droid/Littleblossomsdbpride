@@ -952,3 +952,27 @@ p{ margin: 0 0 1em; }
 .form-feedback{min-height:1.3em;margin:.8rem 0 0;font-weight:700;color:var(--leaf-deep);}
 .contact-form{width:100%;margin:2rem 0 0;}
 @media(max-width:760px){.recognition-grid{grid-template-columns:1fr;}.recognition-certificate{max-width:340px}.recognition-certificate img{height:260px}.lead-form{width:100%;}.lead-form-grid{grid-template-columns:1fr;}}
+
+
+/* =========================================================
+   SECURE GALLERY ADMIN AND MEDIA MANAGEMENT
+   ========================================================= */
+.gallery-admin-entry{display:flex;justify-content:center;margin:2rem 0 0;}
+.gallery-admin-panel{margin:2rem auto 0;max-width:960px;padding:clamp(1rem,3vw,2rem);border:1px solid rgba(127,182,133,.3);border-radius:28px;background:linear-gradient(135deg,#fff 0%,#fff8f0 100%);box-shadow:0 18px 55px rgba(58,42,46,.12);}
+.gallery-admin-panel[hidden],.gallery-admin-panel form[hidden]{display:none!important;}
+.gallery-admin-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;}
+.gallery-admin-heading h3,.gallery-admin-panel h4{font-size:1.45rem;margin:.2rem 0 .8rem;}
+.gallery-admin-panel .lead-form{width:100%;margin:1.2rem 0 0;box-shadow:none;border:1px solid #eee5e5;}
+.gallery-admin-actions{display:flex;gap:.7rem;flex-wrap:wrap;}
+.gallery-admin-note{font-size:.86rem;color:var(--ink-soft);margin-top:.6rem;}
+.gallery-admin-panel button:disabled{opacity:.55;cursor:wait;}
+.gallery-media-item{width:100%;margin:0 0 1.2rem;padding:12px;border-radius:18px;background:#fff;box-shadow:0 10px 28px rgba(58,42,46,.09);}
+.gallery-media-item img,.gallery-media-item video{display:block;width:100%;max-height:70vh;object-fit:contain;border-radius:12px;background:#171717;}
+.gallery-media-title{font-weight:700;margin:.75rem 0 .2rem;}
+.gallery-media-description{color:var(--ink-soft);margin:.2rem 0 .8rem;white-space:pre-wrap;}
+.gallery-item-admin-actions{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:.8rem;}
+.gallery-item-admin-actions .btn{padding:.65rem 1.1rem;font-size:.9rem;}
+.btn-danger{background:#b42332;color:#fff;box-shadow:0 8px 20px rgba(180,35,50,.18);}
+.btn-danger:hover{background:#921c29;}
+.gallery-auth-form[hidden],.gallery-upload-form[hidden]{display:none!important;}
+@media(max-width:600px){.gallery-admin-heading{flex-direction:column}.gallery-admin-actions{flex-direction:column}.gallery-admin-actions .btn{width:100%;justify-content:center}.gallery-admin-panel{padding:1rem}.gallery-media-item{padding:8px}}

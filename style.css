@@ -1136,3 +1136,158 @@ p{ margin: 0 0 1em; }
 @media(prefers-reduced-motion:reduce){
   .hero-video{display:none}
 }
+
+/* =========================================================
+   LITTLE BLOSSOMS — PHOTO-LED PLAYROOM HERO & GALLERY
+   ========================================================= */
+.hero{
+  min-height: min(980px, 100svh);
+  min-height: max(760px, 96svh);
+  padding-top:100px;
+  padding-bottom:105px;
+  background:#fdf0df;
+  align-items:center;
+}
+.hero-video-wrap{
+  background:
+    linear-gradient(90deg,rgba(255,249,240,.97) 0%,rgba(255,249,240,.88) 34%,rgba(255,249,240,.18) 61%,rgba(255,249,240,0) 100%),
+    url("https://images.pexels.com/photos/8535232/pexels-photo-8535232.jpeg?auto=compress&cs=tinysrgb&w=2000") center/cover no-repeat;
+}
+.hero-photo{
+  position:absolute;inset:0;width:100%;height:100%;
+  object-fit:cover;object-position:center 52%;
+  display:block;filter:saturate(1.06);
+}
+.hero::after{
+  background:linear-gradient(90deg,rgba(255,249,240,.96) 0%,rgba(255,249,240,.86) 34%,rgba(255,249,240,.22) 59%,rgba(255,249,240,0) 100%);
+}
+.hero-content{width:min(540px,48%);max-width:540px}
+.hero-eyebrow{
+  color:#53352c;background:transparent;border:0;border-radius:0;
+  padding:0;letter-spacing:.2em;font-size:.78rem;font-weight:800;
+  backdrop-filter:none;
+}
+.hero-title{
+  color:#482b25;font-size:clamp(3.25rem,6vw,5.3rem);
+  line-height:.99;letter-spacing:-.035em;text-shadow:none;
+}
+.bloom-word{color:#ec3f79}
+.bloom-underline path{stroke:#78ae69}
+.hero-sub{color:#5c4640;max-width:36ch;font-size:clamp(1.05rem,1.45vw,1.2rem)}
+.hero-actions .btn-ghost{
+  color:#a62b58;background:rgba(255,255,255,.82);
+  border:1px solid rgba(236,63,121,.36);
+  box-shadow:0 8px 20px rgba(94,53,47,.08);
+}
+.hero-actions .btn-primary{background:linear-gradient(135deg,#fa507e,#d91d60)}
+.hero-feature-strip{
+  display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:.45rem;width:min(580px,58vw);margin-top:2rem;
+  padding:1rem 1.15rem;border-radius:24px;
+  background:rgba(255,249,240,.86);
+  box-shadow:0 14px 36px rgba(89,53,42,.09);
+  backdrop-filter:blur(14px);
+}
+.hero-feature{display:flex;flex-direction:column;align-items:center;gap:.35rem;text-align:center}
+.hero-feature span{
+  width:46px;height:46px;border-radius:50%;display:grid;place-items:center;
+  font-size:1.65rem;font-weight:800;background:#ffe0e9;color:#d83d70;
+}
+.hero-feature:nth-child(2) span{background:#fff0bd;color:#b47b00}
+.hero-feature:nth-child(3) span{background:#dff2d6;color:#4f9b55}
+.hero-feature:nth-child(4) span{background:#d8efff;color:#2877ae}
+.hero-feature small{font-size:.72rem;line-height:1.35;font-weight:700;color:#533b35}
+.hero-decor{opacity:.2}
+.scroll-cue{border-color:rgba(83,53,44,.35)}
+.scroll-cue-dot{background:#e83e76}
+
+/* Real photo cards like the approved visual reference */
+.gallery{
+  margin-top:-1px;
+  padding-top:clamp(44px,6vw,76px);
+  background:linear-gradient(180deg,#fff8ef,#fffdf9);
+  border-radius:38px 38px 0 0;
+  z-index:4;
+}
+.gallery .eyebrow{letter-spacing:.2em}
+.gallery-grid{
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  gap:clamp(.65rem,1.3vw,1.1rem);
+  margin-top:2.2rem;
+}
+.gallery-card{
+  aspect-ratio:3/4;
+  border-radius:22px;
+  background:#f7e4d7;
+  overflow:hidden;
+  box-shadow:0 12px 28px rgba(72,43,37,.12);
+}
+.gallery-face{
+  position:relative;
+  display:flex;flex-direction:column;align-items:flex-start;
+  justify-content:flex-end;gap:.25rem;
+  padding:1rem .9rem;
+  border-radius:inherit;
+  background-size:cover;background-position:center;
+  isolation:isolate;
+  transform:none;
+  transition:transform .45s cubic-bezier(.22,1,.36,1);
+}
+.gallery-face::before{
+  content:"";position:absolute;inset:0;z-index:-1;
+  background:linear-gradient(180deg,rgba(22,17,16,0) 35%,rgba(22,17,16,.7) 100%);
+}
+.gallery-face span{
+  font-size:1.8rem;display:grid;place-items:center;
+  width:42px;height:42px;border-radius:50%;
+  background:rgba(255,255,255,.9);box-shadow:0 5px 16px #0002;
+}
+.gallery-face h4{color:#fff;font-size:1rem;text-shadow:0 2px 12px #0008;margin:0}
+.gallery-card:hover .gallery-face{transform:scale(1.045)}
+.gallery-card[data-folder="classroom"] .gallery-face{
+  background-image:url("https://images.pexels.com/photos/8535232/pexels-photo-8535232.jpeg?auto=compress&cs=tinysrgb&w=800");
+}
+.gallery-card[data-folder="art-activities"] .gallery-face{
+  background-image:url("https://images.pexels.com/photos/31864406/pexels-photo-31864406.jpeg?auto=compress&cs=tinysrgb&w=800");
+}
+.gallery-card[data-folder="outdoor-play"] .gallery-face{
+  background-image:url("https://images.pexels.com/photos/8535898/pexels-photo-8535898.jpeg?auto=compress&cs=tinysrgb&w=800");
+}
+.gallery-card[data-folder="celebration"] .gallery-face{
+  background-image:url("https://images.pexels.com/photos/8535234/pexels-photo-8535234.jpeg?auto=compress&cs=tinysrgb&w=800");
+}
+.gallery-card[data-folder="kids-learning"] .gallery-face{
+  background-image:url("https://images.pexels.com/photos/8613082/pexels-photo-8613082.jpeg?auto=compress&cs=tinysrgb&w=800");
+}
+@media(max-width:900px){
+  .hero{min-height:850px;padding:120px 5vw 100px}
+  .hero-content{width:min(100%,510px);max-width:510px}
+  .hero-title{font-size:clamp(3rem,8vw,4.5rem);max-width:11ch}
+  .hero-video-wrap{
+    background-image:linear-gradient(90deg,rgba(255,249,240,.97) 0%,rgba(255,249,240,.82) 42%,rgba(255,249,240,.18) 100%),url("https://images.pexels.com/photos/8535232/pexels-photo-8535232.jpeg?auto=compress&cs=tinysrgb&w=1400");
+    background-position:center;
+  }
+  .hero::after{background:linear-gradient(90deg,rgba(255,249,240,.78),rgba(255,249,240,.25))}
+  .hero-feature-strip{width:min(580px,75vw)}
+  .gallery-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media(max-width:600px){
+  .hero{min-height:870px;padding:130px 6vw 80px;align-items:flex-start}
+  .hero-content{width:100%;max-width:100%}
+  .hero-title{font-size:clamp(3rem,12.5vw,4rem);max-width:10ch}
+  .hero-sub{max-width:32ch;font-size:1rem}
+  .hero-video-wrap{
+    background-image:linear-gradient(90deg,rgba(255,249,240,.96) 0%,rgba(255,249,240,.84) 42%,rgba(255,249,240,.2) 100%),url("https://images.pexels.com/photos/8535232/pexels-photo-8535232.jpeg?auto=compress&cs=tinysrgb&w=1000");
+    background-position:58% center;
+  }
+  .hero::after{background:linear-gradient(90deg,rgba(255,249,240,.5),rgba(255,249,240,.12))}
+  .hero-feature-strip{width:100%;gap:.15rem;padding:.8rem .45rem;margin-top:1.4rem;border-radius:20px}
+  .hero-feature span{width:38px;height:38px;font-size:1.3rem}
+  .hero-feature small{font-size:.62rem}
+  .gallery{padding-top:42px;border-radius:28px 28px 0 0}
+  .gallery-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:.8rem;margin-top:1.5rem}
+  .gallery-card{aspect-ratio:3/3.65;border-radius:18px}
+  .gallery-face{padding:.75rem}
+  .gallery-face span{width:36px;height:36px;font-size:1.45rem}
+  .gallery-face h4{font-size:.9rem}
+}

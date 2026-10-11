@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://littleblossom0111-droid.github.io/Littleblossomsdbpride/sitemap.xml

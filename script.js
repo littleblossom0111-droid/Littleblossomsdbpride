@@ -541,124 +541,55 @@ let mediaLoadToken = 0;
 async function loadGalleryMedia(folder, token) {
   if (!lightboxMedia) return;
   lightboxMedia.innerHTML = '<div class="lightbox-loading">Loading photos &amp; videos…</div>';
-
-  let results = [];
   try {
-    if (window.LBGalleryAdminReady) {
-      await Promise.race([
-        window.LBGalleryAdminReady,
-        new Promise((_, reject) => setTimeout(() => reject(new Error("Gallery service timed out")), 8000))
-      ]);
-    }
-    const gallery = window.LBGalleryAdmin;
-    if (gallery && gallery.client) {
-      const query = gallery.client.from("gallery_items").select("*").eq("category", folder).order("created_at", { ascending: false });
-      const { data, error } = await query;
-      if (!error && data && data.length) {
-        results = data.map(item => ({
-          id: item.id, title: item.title, description: item.description || "",
-          type: item.media_type, src: item.media_url, storage_path: item.storage_path || "",
-          category: item.category
-        }));
-      }
-    }
-  } catch (error) {
-    console.warn("Database gallery could not load; checking legacy media files.", error);
+    if (window.LBGalleryAdminReady) await Promise.race([window.LBGalleryAdminReady,new Promise((_,reject)=>setTimeout(()=>reject(new Error("Gallery timeout")),8000))]);
+    const gallery=window.LBGalleryAdmin;
+    if(!gallery?.client) throw new Error("Gallery service unavailable");
+    const {data,error}=await gallery.client.from("gallery_items").select("*").eq("category",folder).order("created_at",{ascending:false});
+    if(error) throw error;
+    if(token!==mediaLoadToken)return;
+    window.LBGalleryItems=(data||[]).map(item=>({id:item.id,title:item.title||"Untitled",description:item.description||"",type:item.media_type,src:item.media_url,thumbnail:item.thumbnail_url||"",storage_path:item.storage_path||"",category:item.category,created_at:item.created_at}));
+    renderGalleryMedia("image",folder,token);
+  } catch(error) {
+    console.error("Gallery media failed to load:",error);
+    if(token===mediaLoadToken)lightboxMedia.innerHTML='<div class="lightbox-empty">Gallery is temporarily unavailable. Please refresh and try again.</div>';
   }
-
-  // Retain support for any legacy media/<category>/ files already hosted in the repo.
-  if (!results.length) {
-    // Probe legacy files concurrently so an empty category does not leave the modal loading for a long time.
-    const legacyResults = await Promise.all(
-      Array.from({ length: MEDIA_SLOTS }, (_, index) => findSlotMedia(folder, index + 1))
-    );
-    if (token !== mediaLoadToken) return;
-    results = legacyResults.filter(Boolean);
-  }
-  if (token !== mediaLoadToken) return;
-
-  if (!results.length) {
-    lightboxMedia.innerHTML = '<div class="lightbox-empty"><strong>No photos or videos have been uploaded here yet.</strong><br><br>Admin can sign in below the gallery to add photos or videos.</div>';
-    return;
-  }
-
-  lightboxMedia.innerHTML = "";
-  const gallery = window.LBGalleryAdmin;
-  const canManage = !!(gallery && gallery.isAdmin);
-  results.forEach(item => {
-    const wrapper = document.createElement("article");
-    wrapper.className = "gallery-media-item";
-    if (item.type === "image") {
-      const img = document.createElement("img");
-      img.src = item.src;
-      img.alt = item.title || "Little Blossoms gallery photo";
-      img.loading = "lazy";
-      img.decoding = "async";
-      wrapper.appendChild(img);
-    } else if (item.type === "video") {
-      const video = document.createElement("video");
-      video.src = item.src;
-      video.controls = true;
-      video.preload = "metadata";
-      video.playsInline = true;
-      wrapper.appendChild(video);
+}
+function renderGalleryMedia(filter,folder,token=mediaLoadToken) {
+  if(!lightboxMedia||token!==mediaLoadToken)return;
+  document.querySelectorAll("[data-media-filter]").forEach(button=>{const active=button.dataset.mediaFilter===filter;button.classList.toggle("active",active);button.setAttribute("aria-selected",String(active));});
+  const items=(window.LBGalleryItems||[]).filter(item=>item.type===filter);
+  if(!items.length){lightboxMedia.innerHTML='<div class="lightbox-empty">No '+(filter==="image"?"photos":"videos")+' in this category yet.</div>';return;}
+  lightboxMedia.innerHTML="";
+  const gallery=window.LBGalleryAdmin, canManage=!!(gallery&&gallery.isAdmin);
+  items.forEach(item=>{
+    const card=document.createElement("article");card.className="gallery-media-item";
+    const open=document.createElement("button");open.type="button";open.className="gallery-media-open";open.setAttribute("aria-label",(filter==="video"?"Play video: ":"View photo: ")+item.title);
+    if(filter==="image"){
+      const img=document.createElement("img");img.src=item.thumbnail||item.src;img.alt=item.title;img.loading="lazy";img.decoding="async";open.appendChild(img);
+      open.addEventListener("click",()=>{const viewer=document.createElement("div");viewer.className="gallery-viewer";const close=document.createElement("button");close.type="button";close.className="gallery-viewer-close";close.textContent="×";close.setAttribute("aria-label","Close");const full=document.createElement("img");full.src=item.src;full.alt=item.title;viewer.append(close,full);viewer.addEventListener("click",e=>{if(e.target===viewer||e.target===close)viewer.remove();});document.body.appendChild(viewer);});
+    } else {
+      const poster=document.createElement("div");poster.className="gallery-video-poster";
+      if(item.thumbnail){const img=document.createElement("img");img.src=item.thumbnail;img.alt="";img.loading="lazy";poster.appendChild(img);}else{const fallback=document.createElement("span");fallback.className="gallery-video-symbol";fallback.textContent="▶";poster.appendChild(fallback);}
+      const play=document.createElement("span");play.className="gallery-play-icon";play.textContent="▶";poster.appendChild(play);open.appendChild(poster);
+      open.addEventListener("click",()=>{const viewer=document.createElement("div");viewer.className="gallery-viewer";const close=document.createElement("button");close.type="button";close.className="gallery-viewer-close";close.textContent="×";close.setAttribute("aria-label","Close");const video=document.createElement("video");video.src=item.src;video.controls=true;video.autoplay=true;video.playsInline=true;viewer.append(close,video);viewer.addEventListener("click",e=>{if(e.target===viewer||e.target===close){video.pause();viewer.remove();}});document.body.appendChild(viewer);});
     }
-    if (item.title) {
-      const title = document.createElement("p");
-      title.className = "gallery-media-title";
-      title.textContent = item.title;
-      wrapper.appendChild(title);
+    card.appendChild(open);
+    const title=document.createElement("p");title.className="gallery-media-title";title.textContent=item.title;card.appendChild(title);
+    if(item.description){const d=document.createElement("p");d.className="gallery-media-description";d.textContent=item.description;card.appendChild(d);}
+    if(item.created_at){const date=document.createElement("time");date.className="gallery-media-date";date.dateTime=item.created_at;date.textContent=new Date(item.created_at).toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"});card.appendChild(date);}
+    if(canManage&&item.id){
+      const actions=document.createElement("div");actions.className="gallery-item-admin-actions";
+      const edit=document.createElement("button");edit.type="button";edit.className="btn btn-ghost gallery-edit-btn";edit.textContent="Edit";
+      edit.addEventListener("click",async()=>{const t=prompt("Photo/video title:",item.title);if(t===null)return;const d=prompt("Description:",item.description);if(d===null)return;const {error}=await gallery.client.from("gallery_items").update({title:t.trim().slice(0,120),description:d.trim().slice(0,1000)}).eq("id",item.id);if(error){alert("Update failed: "+error.message);return;}await loadGalleryMedia(folder,token);});
+      const del=document.createElement("button");del.type="button";del.className="btn btn-danger gallery-delete-btn";del.textContent="Delete";
+      del.addEventListener("click",async()=>{if(!confirm("Delete this photo/video permanently?"))return;if(item.storage_path){const {error}=await gallery.client.storage.from("little-blossoms-gallery").remove([item.storage_path]);if(error){alert("File delete failed: "+error.message);return;}}const {error}=await gallery.client.from("gallery_items").delete().eq("id",item.id);if(error){alert("Delete failed: "+error.message);return;}await loadGalleryMedia(folder,token);});
+      actions.append(edit,del);card.appendChild(actions);
     }
-    if (item.description) {
-      const desc = document.createElement("p");
-      desc.className = "gallery-media-description";
-      desc.textContent = item.description;
-      wrapper.appendChild(desc);
-    }
-    if (canManage && item.id) {
-      const actions = document.createElement("div");
-      actions.className = "gallery-item-admin-actions";
-      const edit = document.createElement("button");
-      edit.type = "button";
-      edit.className = "btn btn-ghost gallery-edit-btn";
-      edit.textContent = "Edit";
-      edit.addEventListener("click", async () => {
-        const nextTitle = prompt("Photo/video title:", item.title || "");
-        if (nextTitle === null) return;
-        const nextDescription = prompt("Description:", item.description || "");
-        if (nextDescription === null) return;
-        const nextCategory = prompt("Category: classroom, art-activities, outdoor-play, celebration, kids-learning", item.category || folder);
-        if (nextCategory === null) return;
-        const allowed = ["classroom","art-activities","outdoor-play","celebration","kids-learning"];
-        if (!allowed.includes(nextCategory.trim())) { alert("Please enter one of the listed categories exactly."); return; }
-        const { error } = await gallery.client.from("gallery_items").update({
-          title: nextTitle.trim().slice(0,120),
-          description: nextDescription.trim().slice(0,1000),
-          category: nextCategory.trim()
-        }).eq("id", item.id);
-        if (error) { alert("Update failed: " + error.message); return; }
-        await loadGalleryMedia(folder, token);
-      });
-      const del = document.createElement("button");
-      del.type = "button";
-      del.className = "btn btn-danger gallery-delete-btn";
-      del.textContent = "Delete";
-      del.addEventListener("click", async () => {
-        if (!confirm("Delete this photo/video permanently?")) return;
-        if (item.storage_path) {
-          const { error: storageError } = await gallery.client.storage.from("little-blossoms-gallery").remove([item.storage_path]);
-          if (storageError) { alert("File delete failed: " + storageError.message); return; }
-        }
-        const { error } = await gallery.client.from("gallery_items").delete().eq("id", item.id);
-        if (error) { alert("Record delete failed: " + error.message); return; }
-        await loadGalleryMedia(folder, token);
-      });
-      actions.append(edit, del);
-      wrapper.appendChild(actions);
-    }
-    lightboxMedia.appendChild(wrapper);
+    lightboxMedia.appendChild(card);
   });
 }
+document.querySelectorAll("[data-media-filter]").forEach(button=>button.addEventListener("click",()=>renderGalleryMedia(button.dataset.mediaFilter,"",mediaLoadToken)));
 
 
 /* =========================================================
@@ -3171,190 +3102,14 @@ async function initHeroScene() {
 })();
 
 
-/* =========================================================
-   SECURE GALLERY ADMIN + SUPABASE STORAGE
-   ========================================================= */
-window.LBGalleryAdminReady = (async () => {
-  const SUPABASE_URL = "https://shyxftohajgbxunfsyay.supabase.co";
-  const SUPABASE_KEY = "sb_publishable_hvisH10Zh_MlX77IVzhTag_a5sv1Nn3";
-  const ADMIN_EMAIL = "littleblossom0111@gmail.com";
-  const BUCKET = "little-blossoms-gallery";
-  const { createClient } = await import("https://esm.sh/@supabase/supabase-js@2");
-  const client = createClient(SUPABASE_URL, SUPABASE_KEY, {
-    auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
-  });
-  const panel = document.getElementById("galleryAdminPanel");
-  const toggle = document.getElementById("galleryAdminToggle");
-  const authForm = document.getElementById("galleryAuthForm");
-  const authFeedback = document.getElementById("galleryAuthFeedback");
-  const createButton = document.getElementById("galleryAdminCreate");
-  const forgotButton = document.getElementById("galleryAdminForgot");
-  const logoutButton = document.getElementById("galleryAdminLogout");
-  const uploadForm = document.getElementById("galleryUploadForm");
-  const uploadFeedback = document.getElementById("galleryUploadFeedback");
-  const setMessage = (el, message, bad = false) => {
-    if (!el) return;
-    el.textContent = message;
-    el.style.color = bad ? "var(--coral-deep)" : "var(--leaf-deep)";
-  };
-  const currentEmail = (session) => (session?.user?.email || "").toLowerCase();
-  let isAdmin = false;
-  window.LBGalleryAdmin = { client, isAdmin: false };
-
-  const refreshRole = async (session) => {
-    isAdmin = currentEmail(session) === ADMIN_EMAIL;
-    window.LBGalleryAdmin.isAdmin = isAdmin;
-    if (authForm) authForm.hidden = isAdmin;
-    if (uploadForm) uploadForm.hidden = !isAdmin;
-    if (logoutButton) logoutButton.hidden = !isAdmin;
-    if (toggle) toggle.textContent = isAdmin ? "Admin Gallery: Signed In" : "Admin Login";
-    if (panel) panel.classList.toggle("is-admin", isAdmin);
-    if (!isAdmin && session) {
-      await client.auth.signOut();
-      setMessage(authFeedback, "This account is not authorised for gallery management.", true);
-    } else if (isAdmin) {
-      setMessage(authFeedback, "Admin signed in. Upload, edit and delete controls are enabled.");
-      document.querySelectorAll(".gallery-card").forEach(card => {
-        if (card.getAttribute("aria-expanded") === "true") card.click();
-      });
-    }
-  };
-
-  if (toggle && panel) {
-    toggle.addEventListener("click", () => {
-      panel.hidden = !panel.hidden;
-      if (!panel.hidden) panel.scrollIntoView({ behavior: "smooth", block: "start" });
-    });
-  }
-
-  if (authForm) {
-    authForm.addEventListener("submit", async (event) => {
-      event.preventDefault();
-      const data = new FormData(authForm);
-      const email = String(data.get("email") || "").trim().toLowerCase();
-      const password = String(data.get("password") || "");
-      if (email !== ADMIN_EMAIL) {
-        setMessage(authFeedback, "Only the authorised Little Blossoms admin email can sign in here.", true);
-        return;
-      }
-      const submit = authForm.querySelector('button[type="submit"]');
-      if (submit) submit.disabled = true;
-      setMessage(authFeedback, "Signing in…");
-      const { data: result, error } = await client.auth.signInWithPassword({ email, password });
-      if (error) {
-        setMessage(authFeedback, error.message, true);
-      } else {
-        await refreshRole(result.session);
-        if (isAdmin) {
-          setMessage(authFeedback, "Signed in successfully. Admin tools are now available.");
-          document.querySelectorAll(".gallery-card").forEach(card => {
-            if (card.getAttribute("aria-expanded") === "true") card.click();
-          });
-        }
-      }
-      if (submit) submit.disabled = false;
-    });
-  }
-
-  if (createButton && authForm) {
-    createButton.addEventListener("click", async () => {
-      const data = new FormData(authForm);
-      const email = String(data.get("email") || "").trim().toLowerCase();
-      const password = String(data.get("password") || "");
-      if (email !== ADMIN_EMAIL) { setMessage(authFeedback, "Use the authorised admin email only.", true); return; }
-      if (password.length < 8) { setMessage(authFeedback, "Please enter a password with at least 8 characters first.", true); return; }
-      setMessage(authFeedback, "Creating admin account…");
-      const { error } = await client.auth.signUp({ email, password, options: { emailRedirectTo: location.origin + location.pathname + "#gallery" } });
-      if (error) setMessage(authFeedback, error.message, true);
-      else setMessage(authFeedback, "Account request sent. Check the admin email inbox and confirm the verification link, then sign in.");
-    });
-  }
-
-  if (forgotButton && authForm) {
-    forgotButton.addEventListener("click", async () => {
-      const email = String(new FormData(authForm).get("email") || "").trim().toLowerCase();
-      if (email !== ADMIN_EMAIL) { setMessage(authFeedback, "Enter the authorised admin email first.", true); return; }
-      const { error } = await client.auth.resetPasswordForEmail(email, { redirectTo: location.origin + location.pathname + "#gallery" });
-      setMessage(authFeedback, error ? error.message : "Password reset link sent to the admin email inbox.", !!error);
-    });
-  }
-
-  if (logoutButton) {
-    logoutButton.addEventListener("click", async () => {
-      await client.auth.signOut();
-      isAdmin = false;
-      window.LBGalleryAdmin.isAdmin = false;
-      if (uploadForm) uploadForm.hidden = true;
-      if (authForm) authForm.hidden = false;
-      logoutButton.hidden = true;
-      toggle.textContent = "Admin Login";
-      setMessage(authFeedback, "You are signed out.");
-      document.querySelectorAll(".gallery-card").forEach(card => {
-        if (card.getAttribute("aria-expanded") === "true") card.click();
-      });
-    });
-  }
-
-  if (uploadForm) {
-    uploadForm.addEventListener("submit", async (event) => {
-      event.preventDefault();
-      if (!isAdmin) { setMessage(uploadFeedback, "Please sign in as admin first.", true); return; }
-      const data = new FormData(uploadForm);
-      const selectedCategory = String(data.get("category") || "classroom");
-      const files = Array.from(data.getAll("media_files")).filter(file => file && file.size);
-      if (!files.length) { setMessage(uploadFeedback, "Choose at least one photo or video.", true); return; }
-      const title = String(data.get("title") || "").trim();
-      const category = String(data.get("category") || "classroom");
-      const description = String(data.get("description") || "").trim();
-      const submit = uploadForm.querySelector('button[type="submit"]');
-      if (submit) submit.disabled = true;
-      let completed = 0;
-      setMessage(uploadFeedback, "Uploading 0 of " + files.length + "…");
-      for (const file of files) {
-        if (file.size > 100 * 1024 * 1024) { setMessage(uploadFeedback, file.name + " exceeds 100 MB.", true); continue; }
-        const isImage = file.type.startsWith("image/");
-        const isVideo = file.type.startsWith("video/");
-        if (!isImage && !isVideo) { setMessage(uploadFeedback, file.name + " is not a supported image/video.", true); continue; }
-        const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_").slice(-100);
-        const path = category + "/" + crypto.randomUUID() + "-" + safeName;
-        const { error: uploadError } = await client.storage.from(BUCKET).upload(path, file, { cacheControl: "3600", upsert: false, contentType: file.type });
-        if (uploadError) { setMessage(uploadFeedback, "Upload failed for " + file.name + ": " + uploadError.message, true); continue; }
-        const { data: urlData } = client.storage.from(BUCKET).getPublicUrl(path);
-        const { error: insertError } = await client.from("gallery_items").insert({
-          title: title || file.name,
-          category,
-          media_type: isImage ? "image" : "video",
-          media_url: urlData.publicUrl,
-          thumbnail_url: isImage ? urlData.publicUrl : null,
-          storage_path: path,
-          description: description || null,
-          display_order: Date.now(),
-          is_published: true
-        });
-        if (insertError) {
-          await client.storage.from(BUCKET).remove([path]);
-          setMessage(uploadFeedback, "Database save failed for " + file.name + ": " + insertError.message, true);
-          continue;
-        }
-        completed++;
-        setMessage(uploadFeedback, "Uploading " + completed + " of " + files.length + "…");
-      }
-      if (completed) {
-        setMessage(uploadFeedback, "Done! " + completed + " file(s) added to the gallery.");
-        uploadForm.reset();
-        document.querySelectorAll(".gallery-card").forEach(card => {
-          if (card.dataset.folder === selectedCategory) {
-            card.click();
-          }
-        });
-      }
-      if (submit) submit.disabled = false;
-    });
-  }
-
-  const { data: sessionData } = await client.auth.getSession();
-  await refreshRole(sessionData.session);
-  client.auth.onAuthStateChange((_event, session) => {
-    refreshRole(session);
-  });
+/* Shared Supabase client for public gallery viewing and admin-only edit/delete controls. */
+window.LBGalleryAdminReady=(async()=>{
+ const URL="https://shyxftohajgbxunfsyay.supabase.co",KEY="sb_publishable_hvisH10Zh_MlX77IVzhTag_a5sv1Nn3",ADMIN="littleblossom0111@gmail.com";
+ const {createClient}=await import("https://esm.sh/@supabase/supabase-js@2");
+ const client=createClient(URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+ window.LBGalleryAdmin={client,isAdmin:false};
+ const {data}=await client.auth.getSession();
+ window.LBGalleryAdmin.isAdmin=(data.session?.user?.email||"").toLowerCase()===ADMIN;
+ client.auth.onAuthStateChange((_event,session)=>{window.LBGalleryAdmin.isAdmin=(session?.user?.email||"").toLowerCase()===ADMIN;});
+ return client;
 })();

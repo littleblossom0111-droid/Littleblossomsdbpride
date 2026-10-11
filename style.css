@@ -919,3 +919,36 @@ p{ margin: 0 0 1em; }
   .hero-actions{ flex-direction:column; align-items:stretch; }
   .hero-actions .btn{ justify-content:center; }
 }
+
+
+/* =========================================================
+   PREMIUM PHOTO CARDS, RECOGNITION & LEAD FORMS
+   ========================================================= */
+.recognition{background:linear-gradient(135deg,#fff8ed 0%,#f2f9ff 55%,#fff0f3 100%);}
+.recognition-grid{display:grid;grid-template-columns:1fr .85fr;gap:clamp(2rem,6vw,5rem);align-items:center;}
+.recognition-copy .section-title{max-width:16ch;}
+.recognition-certificate{position:relative;display:block;width:min(100%,430px);margin:auto;padding:14px 14px 54px;background:#fff;border:0;border-radius:22px;box-shadow:0 24px 65px rgba(58,42,46,.2);transform:rotate(1.5deg);cursor:zoom-in;transition:transform .35s ease,box-shadow .35s ease;}
+.recognition-certificate:hover{transform:translateY(-6px) rotate(0);box-shadow:0 32px 80px rgba(58,42,46,.26);}
+.recognition-certificate img{width:100%;height:330px;object-fit:contain;background:#fffaf2;border-radius:12px;}
+.recognition-certificate span{position:absolute;bottom:16px;left:0;right:0;text-align:center;font-weight:700;color:var(--ink);}
+.recognition-certificate.is-missing img{visibility:hidden;}
+.recognition-certificate.is-missing{min-height:280px;display:grid;place-items:center;background:linear-gradient(145deg,#fff,#ffefd9);}
+.recognition-certificate.is-missing:before{content:"🏆 Certificate of Recognition";font-size:1.2rem;font-weight:700;color:var(--ink);}
+.gallery-card[data-folder="classroom"]{background:linear-gradient(180deg,rgba(30,35,45,.03),rgba(30,35,45,.45)),url("https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?auto=format&fit=crop&w=900&q=85") center/cover;}
+.gallery-card[data-folder="art-activities"]{background:linear-gradient(180deg,rgba(30,35,45,.03),rgba(30,35,45,.45)),url("https://images.unsplash.com/photo-1513364776144-60967b0f800f?auto=format&fit=crop&w=900&q=85") center/cover;}
+.gallery-card[data-folder="outdoor-play"]{background:linear-gradient(180deg,rgba(30,35,45,.03),rgba(30,35,45,.45)),url("https://images.unsplash.com/photo-1476231682828-37e571bc172f?auto=format&fit=crop&w=900&q=85") center/cover;}
+.gallery-card[data-folder="celebration"]{background:linear-gradient(180deg,rgba(30,35,45,.03),rgba(30,35,45,.45)),url("https://images.unsplash.com/photo-1511632765486-a01980e01a18?auto=format&fit=crop&w=900&q=85") center/cover;}
+.gallery-card[data-folder="kids-learning"]{background:linear-gradient(180deg,rgba(30,35,45,.03),rgba(30,35,45,.45)),url("https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=900&q=85") center/cover;}
+.gallery-face{color:#fff;text-shadow:0 2px 14px rgba(0,0,0,.65);background:linear-gradient(180deg,transparent 30%,rgba(0,0,0,.45));}
+.gallery-face h4{color:#fff;}
+.lead-form{width:min(900px,92%);margin:3rem auto 0;padding:clamp(1.2rem,3vw,2.2rem);background:rgba(255,255,255,.96);border:1px solid rgba(255,255,255,.85);border-radius:28px;box-shadow:0 22px 60px rgba(58,42,46,.15);text-align:left;color:var(--ink);}
+.lead-form h3{font-size:1.7rem;margin-bottom:.35rem;}
+.lead-form>p{color:var(--ink-soft);}
+.lead-form label{display:flex;flex-direction:column;gap:.4rem;margin-bottom:1rem;font-weight:700;font-size:.9rem;}
+.lead-form input,.lead-form select,.lead-form textarea{width:100%;min-height:48px;padding:.8rem .9rem;border:1px solid #e7dfe0;border-radius:12px;background:#fff;font:500 1rem var(--font-body);color:var(--ink);}
+.lead-form textarea{resize:vertical;}
+.lead-form input:focus,.lead-form select:focus,.lead-form textarea:focus{outline:3px solid rgba(232,83,107,.18);border-color:var(--coral-deep);}
+.lead-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 1rem;}
+.form-feedback{min-height:1.3em;margin:.8rem 0 0;font-weight:700;color:var(--leaf-deep);}
+.contact-form{width:100%;margin:2rem 0 0;}
+@media(max-width:760px){.recognition-grid{grid-template-columns:1fr;}.recognition-certificate{max-width:340px}.recognition-certificate img{height:260px}.lead-form{width:100%;}.lead-form-grid{grid-template-columns:1fr;}}

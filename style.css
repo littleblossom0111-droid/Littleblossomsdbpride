@@ -1343,3 +1343,30 @@ p{ margin: 0 0 1em; }
   .hero{min-height:100svh !important; padding-top:125px !important; padding-bottom:75px !important}
   .hero-video-wrap .hero-photo{object-position:54% center !important}
 }
+
+
+
+/* Improve hero text contrast over rotating Har Ki Pauri photos */
+.hero::after{
+  background:linear-gradient(90deg,rgba(12,20,28,.78) 0%,rgba(12,20,28,.60) 58%,rgba(12,20,28,.28) 100%) !important;
+}
+.hero-content .hero-eyebrow{
+  color:#fff8e8 !important;
+  background:rgba(15,20,28,.48) !important;
+  border-color:rgba(255,255,255,.4) !important;
+  text-shadow:0 2px 8px rgba(0,0,0,.55);
+}
+.hero-content .hero-title{
+  color:#fff !important;
+  text-shadow:0 3px 18px rgba(0,0,0,.65) !important;
+}
+.hero-content .hero-sub{
+  color:#fff !important;
+  text-shadow:0 2px 10px rgba(0,0,0,.9) !important;
+}
+@media(max-width:600px){
+  .hero::after{
+    background:linear-gradient(180deg,rgba(12,20,28,.60) 0%,rgba(12,20,28,.42) 52%,rgba(12,20,28,.30) 100%) !important;
+  }
+  .hero-content .hero-sub{font-size:1.05rem !important;line-height:1.65 !important}
+}

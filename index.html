@@ -186,6 +186,12 @@ href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%22
   }
 }
 
+
+/* Automatic Har Ki Pauri hero photo rotation */
+.hero-photo-slideshow{position:absolute;inset:0;overflow:hidden}
+.hero-photo-slideshow .hero-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 1.2s ease}
+.hero-photo-slideshow .hero-photo.active{opacity:1}
+
 </style>
 
 </head>
@@ -282,7 +288,7 @@ href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%22
 <header class="hero" id="home">
 
   <div class="hero-video-wrap" aria-hidden="true">
-    <img class="hero-photo" src="images/hkps.jpg" alt="" fetchpriority="high">
+    <div class="hero-photo-slideshow" aria-hidden="true"><img class="hero-photo active" src="images/hkp.png" alt="" fetchpriority="high"><img class="hero-photo" src="images/hkps.jpg" alt=""></div>
   </div>
 
   <div class="hero-noise"></div>
@@ -1671,6 +1677,20 @@ href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%22
   src="script.js">
 </script>
 
+
+
+<script>
+(function(){
+  const slides = document.querySelectorAll('.hero-photo-slideshow .hero-photo');
+  if (slides.length < 2) return;
+  let current = 0;
+  window.setInterval(function(){
+    slides[current].classList.remove('active');
+    current = (current + 1) % slides.length;
+    slides[current].classList.add('active');
+  }, 5000);
+})();
+</script>
 
 </body>
 </html>
